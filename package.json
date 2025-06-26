@@ -1,6 +1,6 @@
 {
   "name": "replyt",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Automate YouTube comment replies using AI - A TypeScript library and CLI tool for intelligent YouTube comment management with OpenAI GPT integration",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
