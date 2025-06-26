@@ -31,6 +31,72 @@
 - OpenAI API key
 - YouTube OAuth credentials for posting
 
+### 🔑 Getting Required Credentials
+
+Before running the setup, you'll need to obtain several API credentials. Here's how to get each one:
+
+#### 1. YouTube Data API Key
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing project
+3. Go to **"APIs & Services"** → **"Library"**
+4. Search for **"YouTube Data API v3"** and click **"ENABLE"**
+5. Go to **"APIs & Services"** → **"Credentials"**
+6. Click **"+ CREATE CREDENTIALS"** → **"API key"**
+7. Copy the API key
+8. (Recommended) Restrict the key to **"YouTube Data API v3"** for security
+
+#### 2. YouTube Channel ID
+
+**Option A: From Channel URL**
+
+- If your URL is `youtube.com/channel/UCxxxxxx`, the part after `/channel/` is your Channel ID
+
+**Option B: From Custom URL**
+
+- If your URL is `youtube.com/@username` or `youtube.com/c/username`:
+  1. Go to your YouTube channel
+  2. Click **"About"** tab
+  3. Click **"Share Channel"**
+  4. Copy the Channel ID (format: `UCxxxxxxxxxxxxxxxxxxxxxx`)
+
+#### 3. OpenAI API Key
+
+1. Go to [OpenAI Platform](https://platform.openai.com/)
+2. Sign up or log in to your account
+3. Go to **"API keys"** section
+4. Click **"Create new secret key"**
+5. Copy the API key (starts with `sk-proj-` or `sk-`)
+
+#### 4. YouTube OAuth Credentials
+
+**Step 1: OAuth Consent Screen**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Make sure you're in the **same project** as your YouTube Data API
+3. Go to **"APIs & Services"** → **"OAuth consent screen"**
+4. Choose **"External"** user type, click **"CREATE"**
+5. Fill required fields:
+   - App name: `Replyt` (or any name)
+   - User support email: your email
+   - Developer contact: same email
+6. **IMPORTANT**: In **"Test users"** section → **"ADD USERS"** → enter your email
+
+**Step 2: Create OAuth Client**
+
+1. Go to **"APIs & Services"** → **"Credentials"**
+2. Click **"+ CREATE CREDENTIALS"** → **"OAuth client ID"**
+3. Application type: **"Desktop application"**
+4. Name: `Replyt YouTube Bot`
+5. Click **"CREATE"**
+6. Copy the **Client ID** and **Client secret**
+
+**Troubleshooting OAuth Setup:**
+
+- If you get "Access blocked" error, make sure your email is added as Test User
+- OAuth consent screen status should be "Testing" (not "In production")
+- Wait 5-10 minutes after adding test user before trying again
+
 ### Choose Your Installation Method
 
 There are **two main ways** to use Replyt:

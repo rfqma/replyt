@@ -55,6 +55,39 @@ async function setup() {
   console.log("2. YouTube Channel ID");
   console.log("3. OpenAI API Key (for generating replies)\n");
 
+  // Show detailed instructions for each credential
+  console.log("📖 How to get YouTube Data API Key:");
+  console.log(
+    "1. Go to Google Cloud Console: https://console.cloud.google.com/"
+  );
+  console.log("2. Create a new project or select existing project");
+  console.log('3. Go to "APIs & Services" → "Library"');
+  console.log('4. Search for "YouTube Data API v3" and enable it');
+  console.log('5. Go to "APIs & Services" → "Credentials"');
+  console.log('6. Click "+ CREATE CREDENTIALS" → "API key"');
+  console.log(
+    "7. Copy the API key (restrict it to YouTube Data API v3 for security)\n"
+  );
+
+  console.log("📖 How to get YouTube Channel ID:");
+  console.log("1. Go to your YouTube channel");
+  console.log(
+    "2. Copy the URL (e.g., youtube.com/channel/UCxxxxxx or youtube.com/@username)"
+  );
+  console.log(
+    "3. If URL has @username, go to channel → About → Share Channel → Copy channel ID"
+  );
+  console.log(
+    "4. Channel ID format: UCxxxxxxxxxxxxxxxxxxxxxx (starts with UC)\n"
+  );
+
+  console.log("📖 How to get OpenAI API Key:");
+  console.log("1. Go to OpenAI Platform: https://platform.openai.com/");
+  console.log("2. Sign up or log in to your account");
+  console.log('3. Go to "API keys" section');
+  console.log('4. Click "Create new secret key"');
+  console.log("5. Copy the API key (starts with sk-proj- or sk-)\n");
+
   // collect basic information (preserve existing if available)
   const currentYtApiKey = existingEnv.YOUTUBE_API_KEY || "";
   const currentChannelId = existingEnv.YOUTUBE_CHANNEL_ID || "";
@@ -169,8 +202,16 @@ DATABASE_PATH=./data/comments.db
 
   console.log("\n🎉 Complete setup finished!");
   console.log("\n📝 Next steps:");
+  console.log(
+    "if you run the entire project locally (cloned repository), you can run the following commands:"
+  );
   console.log("1. npm run test   ← Test all credentials");
   console.log("2. npm run dev    ← Run the bot");
+  console.log(
+    "if you run from the CLI (npm install -g replyt), you can run the following commands:"
+  );
+  console.log("1. replyt test   ← Test all credentials");
+  console.log("2. replyt    ← Run the bot");
   console.log(
     "\n🚀 Your bot is ready to automatically reply to YouTube comments!"
   );
@@ -181,32 +222,51 @@ DATABASE_PATH=./data/comments.db
 async function setupOAuthCredentials() {
   console.log("\n🛠️  OAuth Credentials Setup\n");
 
-  console.log("📋 OAuth setup instructions:");
+  console.log("📖 Detailed OAuth setup instructions:");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("🔗 Step 1: Google Cloud Console Setup");
+  console.log("1. Go to: https://console.cloud.google.com/");
   console.log(
-    "1. Go to Google Cloud Console: https://console.cloud.google.com/"
+    "2. Make sure you're in the SAME PROJECT as your YouTube Data API"
   );
-  console.log("2. Select the same project as your YouTube Data API");
-  console.log('3. Go to "APIs & Services" → "OAuth consent screen"');
-  console.log("4. Setup OAuth consent screen if not done:");
-  console.log("   - User Type: External");
-  console.log('   - App name: "Replyt"');
-  console.log("   - User support email: your email");
-  console.log("   - Developer contact: same email");
-  console.log('5. In "Test users" section → ADD USERS → enter your email');
   console.log(
-    '6. Go to "Credentials" → "+ CREATE CREDENTIALS" → "OAuth client ID"'
+    "3. In the sidebar, click 'APIs & Services' → 'OAuth consent screen'\n"
   );
-  console.log('7. Application type: "Desktop application"');
-  console.log('8. Name: "Replyt YouTube Bot"');
-  console.log("9. Copy Client ID and Client Secret\n");
 
-  console.log('⚠️  IMPORTANT: If you get "Access blocked" error:');
-  console.log("   - Make sure your email is added as Test User");
-  console.log("   - OAuth consent screen status: Testing (not In production)");
-  console.log("   - Required scopes will be automatically added\n");
+  console.log("🔗 Step 2: OAuth Consent Screen");
+  console.log("1. If first time: Choose 'External' user type, click 'CREATE'");
+  console.log("2. Fill required fields:");
+  console.log("   • App name: 'Replyt' (or any name you prefer)");
+  console.log("   • User support email: your email address");
+  console.log("   • Developer contact information: same email");
+  console.log("3. Click 'SAVE AND CONTINUE' through all steps");
+  console.log("4. IMPORTANT: Add your email as test user:");
+  console.log("   • In 'Test users' section → 'ADD USERS'");
+  console.log("   • Enter your email → 'SAVE'\n");
 
-  const clientId = await question("🔑 Enter OAuth Client ID: ");
-  const clientSecret = await question("🔐 Enter OAuth Client Secret: ");
+  console.log("🔗 Step 3: Create OAuth Client");
+  console.log("1. Go to 'APIs & Services' → 'Credentials'");
+  console.log("2. Click '+ CREATE CREDENTIALS' → 'OAuth client ID'");
+  console.log("3. Application type: 'Desktop application'");
+  console.log("4. Name: 'Replyt YouTube Bot' (or any name)");
+  console.log("5. Click 'CREATE'");
+  console.log("6. Copy the 'Client ID' and 'Client secret'\n");
+
+  console.log("⚠️  TROUBLESHOOTING: If you get 'Access blocked' error:");
+  console.log("• Make sure your email is added as Test User (Step 2.4)");
+  console.log(
+    "• OAuth consent screen status should be 'Testing' (not 'In production')"
+  );
+  console.log("• Wait 5-10 minutes after adding test user");
+  console.log("• Make sure you're logged into the same Google account");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+  const clientId = await question(
+    "🔑 Enter OAuth Client ID (looks like xxx.apps.googleusercontent.com): "
+  );
+  const clientSecret = await question(
+    "🔐 Enter OAuth Client Secret (looks like GOCSPX-xxx): "
+  );
 
   console.log("\n✅ OAuth client credentials saved!");
 
@@ -240,21 +300,40 @@ async function getRefreshToken(clientId, clientSecret) {
   });
 
   console.log("📝 Authorization steps:");
-  console.log("1. COPY and OPEN the following URL in your browser:");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("🌐 Step 1: Open Authorization URL");
+  console.log("1. COPY the following URL:");
   console.log("");
   console.log("🔗 " + authUrl);
   console.log("");
-  console.log("2. Login with your YouTube channel account");
-  console.log('3. If you see "Access blocked" or "Error 403":');
-  console.log("   a. Go to Google Cloud Console → OAuth consent screen");
-  console.log('   b. Scroll to "Test users" → ADD USERS');
-  console.log("   c. Add your email as test user");
-  console.log("   d. Wait 5-10 minutes, then try again");
-  console.log('4. Click "Allow" to grant permissions');
-  console.log("5. After redirect, copy the ENTIRE URL from address bar");
-  console.log("6. Or if authorization code appears, copy that code\n");
+  console.log("2. PASTE it in your web browser and press Enter");
+  console.log(
+    "3. Make sure you're logged into the Google account that owns the YouTube channel\n"
+  );
 
-  const input = await question("🔑 Paste full URL or authorization code: ");
+  console.log("🔐 Step 2: Grant Permissions");
+  console.log("1. You should see a Google authorization page");
+  console.log("2. If you see 'Access blocked' or 'Error 403':");
+  console.log("   • Go back to Google Cloud Console → OAuth consent screen");
+  console.log("   • Check 'Test users' section → ADD USERS → enter your email");
+  console.log("   • Wait 5-10 minutes, then try the URL again");
+  console.log("3. Click 'Allow' to grant permissions to Replyt");
+  console.log(
+    "4. You'll be redirected to a localhost page (it may show an error - that's OK!)\n"
+  );
+
+  console.log("📋 Step 3: Copy Authorization Code");
+  console.log("1. After clicking 'Allow', check the address bar");
+  console.log("2. Copy the ENTIRE URL from the address bar");
+  console.log(
+    "3. It should look like: http://localhost:3000/?code=4/xxxxx&scope=..."
+  );
+  console.log("4. Or if you see just a code, copy that code");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+  const input = await question(
+    "🔑 Paste the full URL or authorization code here: "
+  );
 
   // Extract code from URL or use directly if it's a code
   let authCode;
