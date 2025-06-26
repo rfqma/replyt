@@ -15,25 +15,51 @@
 - 🔧 **Configurable**: Customize reply style, intervals, and more
 - 📦 **CLI & Library**: Use as command line tool or import as library
 
-## 📦 Installation
+## 📦 Installation & Usage
 
-### Global Installation (CLI)
+There are **two main ways** to use Replyt:
+
+### 🎯 Method 1: CLI Tool (Global Installation)
+
+**Best for:** Quick setup, production use, non-developers
 
 ```bash
+# Install globally
 npm install -g replyt
+
+# Setup configuration
+replyt setup
+
+# Run the bot
+replyt
 ```
 
-### Local Installation (Library)
+### 🛠️ Method 2: Local Development (Clone Repository)
+
+**Best for:** Developers, customization, contributing, learning
 
 ```bash
-npm install replyt
+# Clone repository
+git clone https://github.com/rfqma/replyt.git
+cd replyt
+
+# Install dependencies
+npm install
+
+# Setup configuration
+npm run setup
+
+# Run in development mode
+npm run dev
 ```
 
-## 🔧 Setup
+---
 
-### 1. Environment Variables
+## 🔧 Setup Guide
 
-Create a `.env` file in your project root:
+### Environment Variables
+
+Both methods require a `.env` file with your API credentials:
 
 ```env
 # YouTube API
@@ -56,33 +82,65 @@ REPLY_STYLE="friendly and helpful"
 DATABASE_PATH=./data/replyt.db
 ```
 
-### 2. Setup APIs
+### Setup APIs
 
-If installed globally, run:
+**For CLI (Global Install):**
 
 ```bash
-replyt setup
+replyt setup    # Interactive setup wizard
 ```
 
-Or use the setup scripts:
+**For Local Development:**
 
 ```bash
-node scripts/setup.js    # Setup YouTube API Key
-node scripts/oauth.js    # Setup OAuth for posting (optional)
-node scripts/test.js     # Test configuration
+npm run setup   # Setup YouTube API Key
+npm run oauth   # Setup OAuth for posting (optional)
+npm run test    # Test configuration
 ```
 
-## 🎯 Usage
+---
 
-### CLI Usage
+## 🎯 Usage Instructions
 
-After setup, run the bot:
+### 🌐 CLI Usage (Global Install)
+
+After global installation and setup:
 
 ```bash
+# Start the bot
 replyt
+
+# That's it! The bot will run automatically
 ```
 
-### Library Usage
+### 💻 Local Development Usage
+
+**Running the Bot:**
+
+```bash
+npm run dev     # Development mode with auto-restart
+npm run start   # Production mode (requires build)
+npm run watch   # Development with file watching
+```
+
+**Development Commands:**
+
+```bash
+npm run build   # Compile TypeScript
+npm run clean   # Clean build files
+npm run test    # Test API connections
+npm run setup   # Run setup wizard
+npm run oauth   # Setup OAuth authentication
+```
+
+### 📚 Library Usage (Both Methods)
+
+You can also use Replyt as a library in your own projects:
+
+```bash
+# Install as dependency
+npm install replyt
+```
 
 ```typescript
 import { Replyt, AutoReplyBot, config } from "replyt";
@@ -123,6 +181,8 @@ console.log(stats);
 // Shutdown
 bot.shutdown();
 ```
+
+---
 
 ## 📋 API Documentation
 
@@ -237,11 +297,10 @@ If you don't configure OAuth, the bot will run in **read-only** mode:
 - ✅ Track in database
 - ❌ Won't post replies to YouTube
 
-To enable posting, setup OAuth with:
+To enable posting:
 
-```bash
-node scripts/oauth.js
-```
+**CLI:** `replyt oauth`
+**Local:** `npm run oauth`
 
 ## 📊 Monitoring
 
@@ -257,35 +316,46 @@ The bot provides detailed logging and statistics:
 📊 Total comments processed: 150
 ```
 
-## 🛠️ Development
+## 🛠️ Development (Local Repository)
+
+### Quick Start
 
 ```bash
-# Clone repository
 git clone https://github.com/rfqma/replyt.git
 cd replyt
-
-# Install dependencies
 npm install
-
-# Build TypeScript
-npm run build
-
-# Development mode
+npm run setup
 npm run dev
-
-# Test APIs
-npm run test
 ```
 
-## 📝 Scripts
+### Available Scripts
 
-- `npm run build` - Compile TypeScript
-- `npm run start` - Start bot (CLI)
-- `npm run dev` - Development mode with watch
-- `npm run setup` - Setup wizard
-- `npm run oauth` - OAuth setup
-- `npm run test` - Test configuration
-- `npm run clean` - Clean build files
+| Command            | Description                        |
+| ------------------ | ---------------------------------- |
+| `npm run dev`      | Development mode with auto-restart |
+| `npm run start`    | Production mode (requires build)   |
+| `npm run build`    | Compile TypeScript                 |
+| `npm run watch`    | Development with file watching     |
+| `npm run setup`    | Setup wizard                       |
+| `npm run oauth`    | OAuth setup                        |
+| `npm run test`     | Test configuration                 |
+| `npm run clean`    | Clean build files                  |
+| `npm run validate` | Validate package structure         |
+
+### Project Structure
+
+```
+replyt/
+├── src/
+│   ├── bin/replyt.ts      # CLI executable
+│   ├── lib/index.ts       # Library exports
+│   ├── services/          # Core services
+│   ├── config/            # Configuration
+│   └── types/             # TypeScript types
+├── scripts/               # Setup scripts
+├── examples/              # Usage examples
+└── dist/                  # Compiled output
+```
 
 ## 🔧 Troubleshooting
 
@@ -306,7 +376,9 @@ npm run test
    Error: invalid_grant
    ```
 
-   - Refresh token expired, run `npm run oauth` again
+   - Refresh token expired, run OAuth setup again:
+     - **CLI:** `replyt oauth`
+     - **Local:** `npm run oauth`
 
 3. **OpenAI Rate Limits**
    ```
@@ -317,11 +389,8 @@ npm run test
 
 ### Debug Mode
 
-Set environment variable for debugging:
-
-```bash
-DEBUG=replyt:* npm start
-```
+**CLI:** `DEBUG=replyt:* replyt`
+**Local:** `DEBUG=replyt:* npm run dev`
 
 ## 📄 License
 
