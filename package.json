@@ -1,0 +1,78 @@
+{
+  "name": "replyt",
+  "version": "1.0.0",
+  "description": "Automate YouTube comment replies using AI - A TypeScript library and CLI tool for intelligent YouTube comment management with OpenAI GPT integration",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "bin": {
+    "replyt": "dist/bin/replyt.js"
+  },
+  "files": [
+    "dist/",
+    "scripts/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublish": "npm run build",
+    "start": "node dist/bin/replyt.js",
+    "dev": "ts-node src/bin/replyt.ts",
+    "watch": "ts-node --watch src/bin/replyt.ts",
+    "setup": "node scripts/setup.js",
+    "oauth": "node scripts/oauth.js",
+    "test": "node scripts/test.js",
+    "clean": "rm -rf dist/",
+    "validate": "node scripts/validate-package.js",
+    "pack:test": "npm pack --dry-run",
+    "lint": "echo 'Add linter if needed'",
+    "test:unit": "echo 'Add unit tests if needed'"
+  },
+  "keywords": [
+    "youtube",
+    "ai",
+    "auto-reply",
+    "comment-automation",
+    "openai",
+    "typescript",
+    "youtube-api",
+    "chatgpt",
+    "automation",
+    "social-media",
+    "content-creation",
+    "cli",
+    "library"
+  ],
+  "author": {
+    "name": "rfqma",
+    "url": "https://github.com/rfqma"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rfqma/replyt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rfqma/replyt/issues"
+  },
+  "homepage": "https://github.com/rfqma/replyt#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "googleapis": "^128.0.0",
+    "openai": "^4.20.1",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1"
+  },
+  "peerDependencies": {},
+  "optionalDependencies": {}
+}

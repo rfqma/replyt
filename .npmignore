@@ -1,0 +1,36 @@
+# Source files (only dist should be published)
+src/
+tsconfig.json
+
+# Development files
+.env*
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Test and development data
+data/
+*.db
+*.sqlite
+
+# Git
+.git/
+.gitignore
+
+# Testing and CI
+.github/
+coverage/
+.nyc_output/
+
+# Development dependencies
+node_modules/
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# Optional files
+TODO.md
+CHANGELOG.md 
