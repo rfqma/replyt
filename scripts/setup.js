@@ -20,7 +20,7 @@ async function setup() {
   console.log("Setup basic API credentials for YouTube auto-reply bot.\n");
 
   // check if .env already exists
-  const envPath = path.join(__dirname, "..", ".env");
+  const envPath = path.join(process.cwd(), ".env");
   const envExamplePath = path.join(__dirname, "..", "env.example");
 
   let existingEnv = {};
@@ -166,7 +166,7 @@ DATABASE_PATH=./data/comments.db
   }
 
   // create data directory
-  const dataDir = path.join(__dirname, "..", "data");
+  const dataDir = path.join(process.cwd(), "data");
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
     console.log("📁 Data directory created");

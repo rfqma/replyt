@@ -5,10 +5,31 @@ import { config, validateConfig } from "../config";
 import { AutoReplyBot } from "../services/autoReplyBot";
 import * as fs from "fs";
 import * as path from "path";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { promisify } from "util";
 
 const execAsync = promisify(exec);
+
+function runInteractiveScript(scriptPath: string, cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("node", [scriptPath], {
+      cwd: cwd,
+      stdio: "inherit", // This allows the script to interact with the terminal
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Script exited with code ${code}`));
+      }
+    });
+
+    child.on("error", (error) => {
+      reject(error);
+    });
+  });
+}
 
 function showHelp() {
   console.log(`
@@ -40,8 +61,22 @@ function showVersion() {
 async function runSetup() {
   console.log("🔧 Running setup wizard...");
   try {
-    const scriptPath = path.join(__dirname, "../..", "scripts", "setup.js");
-    await execAsync(`node "${scriptPath}"`);
+    // For global installations, find the script in the package directory
+    let scriptPath = path.join(__dirname, "../..", "scripts", "setup.js");
+
+    // Check if script exists, if not try alternative paths for global install
+    if (!fs.existsSync(scriptPath)) {
+      // Try package root relative to binary
+      const packageRoot = path.dirname(path.dirname(__dirname));
+      scriptPath = path.join(packageRoot, "scripts", "setup.js");
+    }
+
+    if (!fs.existsSync(scriptPath)) {
+      throw new Error(`Setup script not found at ${scriptPath}`);
+    }
+
+    // Use spawn for interactive script to properly handle stdin/stdout
+    await runInteractiveScript(scriptPath, process.cwd());
   } catch (error) {
     console.error("❌ Setup failed:", error);
     process.exit(1);
@@ -51,8 +86,22 @@ async function runSetup() {
 async function runOAuth() {
   console.log("🔐 Running OAuth setup...");
   try {
-    const scriptPath = path.join(__dirname, "../..", "scripts", "oauth.js");
-    await execAsync(`node "${scriptPath}"`);
+    // For global installations, find the script in the package directory
+    let scriptPath = path.join(__dirname, "../..", "scripts", "oauth.js");
+
+    // Check if script exists, if not try alternative paths for global install
+    if (!fs.existsSync(scriptPath)) {
+      // Try package root relative to binary
+      const packageRoot = path.dirname(path.dirname(__dirname));
+      scriptPath = path.join(packageRoot, "scripts", "oauth.js");
+    }
+
+    if (!fs.existsSync(scriptPath)) {
+      throw new Error(`OAuth script not found at ${scriptPath}`);
+    }
+
+    // Use spawn for interactive script to properly handle stdin/stdout
+    await runInteractiveScript(scriptPath, process.cwd());
   } catch (error) {
     console.error("❌ OAuth setup failed:", error);
     process.exit(1);
@@ -62,8 +111,22 @@ async function runOAuth() {
 async function runTest() {
   console.log("🧪 Testing API connections...");
   try {
-    const scriptPath = path.join(__dirname, "../..", "scripts", "test.js");
-    await execAsync(`node "${scriptPath}"`);
+    // For global installations, find the script in the package directory
+    let scriptPath = path.join(__dirname, "../..", "scripts", "test.js");
+
+    // Check if script exists, if not try alternative paths for global install
+    if (!fs.existsSync(scriptPath)) {
+      // Try package root relative to binary
+      const packageRoot = path.dirname(path.dirname(__dirname));
+      scriptPath = path.join(packageRoot, "scripts", "test.js");
+    }
+
+    if (!fs.existsSync(scriptPath)) {
+      throw new Error(`Test script not found at ${scriptPath}`);
+    }
+
+    // Set working directory to current directory for .env file reading
+    await execAsync(`node "${scriptPath}"`, { cwd: process.cwd() });
   } catch (error) {
     console.error("❌ API test failed:", error);
     process.exit(1);

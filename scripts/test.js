@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(process.cwd(), ".env") });
 const { google } = require("googleapis");
 const OpenAI = require("openai");
 

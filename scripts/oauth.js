@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(process.cwd(), ".env") });
 const { google } = require("googleapis");
 const readline = require("readline");
 const fs = require("fs");
-const path = require("path");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -252,7 +252,7 @@ async function testOAuthCredentials() {
 }
 
 async function updateEnvFile(updates) {
-  const envPath = path.join(__dirname, "..", ".env");
+  const envPath = path.join(process.cwd(), ".env");
   let envContent = "";
 
   // Read existing .env
