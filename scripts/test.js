@@ -72,10 +72,8 @@ async function testOAuthCredentials() {
     !process.env.YOUTUBE_CLIENT_SECRET ||
     !process.env.YOUTUBE_REFRESH_TOKEN
   ) {
-    console.log(
-      "⚠️  OAuth credentials incomplete - bot will run in READ-ONLY mode"
-    );
-    console.log('💡 Run "npm run oauth" to setup OAuth');
+    console.log("❌ OAuth credentials missing - OAuth is required!");
+    console.log('🔧 Run "npm run setup" to setup complete authentication');
     return false;
   }
 
@@ -112,7 +110,7 @@ async function testOAuthCredentials() {
     }
   } catch (error) {
     console.log("❌ OAuth Error:", error.message);
-    console.log('💡 Run "npm run oauth" to refresh credentials');
+    console.log('💡 Run "npm run setup" to refresh credentials');
     return false;
   }
 }
@@ -212,23 +210,19 @@ async function runTests() {
   console.log("📋 Test Results:");
   console.log(`YouTube API: ${youtubeOK ? "✅" : "❌"}`);
   console.log(`OpenAI API: ${openaiOK ? "✅" : "❌"}`);
-  console.log(`OAuth Credentials: ${oauthOK ? "✅" : "⚠️"}`);
+  console.log(`OAuth Credentials: ${oauthOK ? "✅" : "❌"}`);
   console.log(`Comments Access: ${commentsOK ? "✅" : "❌"}`);
 
-  if (youtubeOK && openaiOK) {
-    if (oauthOK) {
-      console.log("\n🎉 All tests passed! Bot ready to run in FULL MODE.");
-      console.log("🚀 Run: npm run dev");
-    } else {
-      console.log("\n⚠️  Basic APIs OK, but OAuth not setup.");
-      console.log("🎭 Bot will run in READ-ONLY mode.");
-      console.log("🔧 Run: npm run oauth (to enable posting)");
-      console.log("🚀 Or directly: npm run dev (READ-ONLY mode)");
-    }
+  if (youtubeOK && openaiOK && oauthOK && commentsOK) {
+    console.log("\n🎉 All tests passed! Bot ready to run.");
+    console.log("🚀 Run: npm run dev");
   } else {
     console.log(
-      "\n⚠️  Some tests failed. Fix the issues above before running the bot."
+      "\n❌ Some tests failed. Fix the issues above before running the bot."
     );
+    if (!oauthOK) {
+      console.log("🔧 OAuth is required - run: npm run setup");
+    }
   }
 }
 

@@ -29,17 +29,7 @@ export class AutoReplyBot {
     await this.db.initialize();
     this.isInitialized = true;
 
-    // check posting capabilities
-    if (this.youtube.canPostComments()) {
-      console.log(
-        "🤖 Bot initialized successfully - FULL MODE (can post replies)"
-      );
-    } else {
-      console.log(
-        "🤖 Bot initialized successfully - READ-ONLY MODE (cannot post replies)"
-      );
-      console.log('💡 Run "npm run setup-oauth" to enable comment posting');
-    }
+    console.log("🤖 Bot initialized successfully");
   }
 
   async processNewComments(): Promise<void> {
@@ -61,12 +51,6 @@ export class AutoReplyBot {
       if (newComments.length === 0) {
         console.log("✨ No new comments to process");
         return;
-      }
-
-      // check if we can post comments
-      if (!this.youtube.canPostComments()) {
-        console.log("⚠️  Running in READ-ONLY mode - will simulate replies");
-        console.log('💡 Run "npm run setup-oauth" to enable actual posting');
       }
 
       // process comments with rate limiting
@@ -118,20 +102,6 @@ export class AutoReplyBot {
 
       // post reply to YouTube
       console.log(`📤 Posting reply: "${aiResponse.content}"`);
-
-      if (!this.youtube.canPostComments()) {
-        // simulate posting in read-only mode
-        console.log(
-          "🎭 SIMULATED - Reply would be posted if OAuth was configured"
-        );
-        await this.db.updateCommentStatus(
-          comment.id,
-          "replied",
-          aiResponse.content
-        );
-        console.log(`✅ Simulated reply to comment ${comment.id}`);
-        return;
-      }
 
       const success = await this.youtube.replyToComment(
         comment.id,

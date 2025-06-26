@@ -1,23 +1,59 @@
 #!/usr/bin/env node
 
-import * as cron from "node-cron";
-import { config, validateConfig } from "../config";
-import { AutoReplyBot } from "../services/autoReplyBot";
-import * as fs from "fs";
-import * as path from "path";
-import { exec, spawn } from "child_process";
-import { promisify } from "util";
+import { AutoReplyBot, config, validateConfig } from "../lib";
+import { promises as fs } from "fs";
+import path from "path";
+import { spawn } from "child_process";
 
-const execAsync = promisify(exec);
+function showHelp(): void {
+  console.log(`
+🤖 Replyt - YouTube Auto-Reply Bot
 
-function runInteractiveScript(scriptPath: string, cwd: string): Promise<void> {
+Usage:
+  replyt                   Start the bot
+  replyt setup             Complete setup (API + OAuth)
+  replyt test              Test API connections
+  replyt --help            Show this help
+  replyt --version         Show version
+
+Examples:
+  # First time setup
+  mkdir replyt-bot && cd replyt-bot
+  replyt setup             # Setup API credentials and OAuth
+  replyt test              # Test all connections
+  replyt                   # Start the bot
+
+  # Development with npm
+  npm run setup            # Complete setup
+  npm run test             # Test connections  
+  npm run dev              # Start in development mode
+
+Documentation:
+  https://github.com/rfqma/replyt
+`);
+}
+
+function showVersion(): void {
+  try {
+    const packagePath = path.join(__dirname, "../../package.json");
+    const packageJson = require(packagePath);
+    console.log(`Replyt v${packageJson.version}`);
+  } catch (error) {
+    console.log("Replyt (version unknown)");
+  }
+}
+
+function runInteractiveScript(
+  scriptPath: string,
+  workingDir: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn("node", [scriptPath], {
-      cwd: cwd,
-      stdio: "inherit", // This allows the script to interact with the terminal
+      cwd: workingDir,
+      stdio: "inherit", // This allows interactive input/output
     });
 
-    child.on("close", (code) => {
+    child.on("exit", (code) => {
       if (code === 0) {
         resolve();
       } else {
@@ -31,47 +67,30 @@ function runInteractiveScript(scriptPath: string, cwd: string): Promise<void> {
   });
 }
 
-function showHelp() {
-  console.log(`
-🤖 Replyt - YouTube Comment Auto-Reply Bot
-
-Usage:
-  replyt                    Start the bot (default)
-  replyt setup             Setup API keys and configuration
-  replyt oauth             Setup OAuth for comment posting
-  replyt test              Test API connections
-  replyt --help            Show this help
-  replyt --version         Show version
-
-Examples:
-  replyt                   # Start the bot with current config
-  replyt setup             # Interactive setup wizard
-  replyt oauth             # Setup YouTube OAuth for posting
-  replyt test              # Test all API connections
-
-For more info: https://github.com/rfqma/replyt
-`);
-}
-
-function showVersion() {
-  const packageJson = require("../../package.json");
-  console.log(`Replyt v${packageJson.version}`);
-}
-
 async function runSetup() {
-  console.log("🔧 Running setup wizard...");
+  console.log("🚀 Running complete setup...");
   try {
     // For global installations, find the script in the package directory
     let scriptPath = path.join(__dirname, "../..", "scripts", "setup.js");
 
     // Check if script exists, if not try alternative paths for global install
-    if (!fs.existsSync(scriptPath)) {
+    if (
+      !(await fs
+        .access(scriptPath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       // Try package root relative to binary
       const packageRoot = path.dirname(path.dirname(__dirname));
       scriptPath = path.join(packageRoot, "scripts", "setup.js");
     }
 
-    if (!fs.existsSync(scriptPath)) {
+    if (
+      !(await fs
+        .access(scriptPath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       throw new Error(`Setup script not found at ${scriptPath}`);
     }
 
@@ -83,156 +102,110 @@ async function runSetup() {
   }
 }
 
-async function runOAuth() {
-  console.log("🔐 Running OAuth setup...");
-  try {
-    // For global installations, find the script in the package directory
-    let scriptPath = path.join(__dirname, "../..", "scripts", "oauth.js");
-
-    // Check if script exists, if not try alternative paths for global install
-    if (!fs.existsSync(scriptPath)) {
-      // Try package root relative to binary
-      const packageRoot = path.dirname(path.dirname(__dirname));
-      scriptPath = path.join(packageRoot, "scripts", "oauth.js");
-    }
-
-    if (!fs.existsSync(scriptPath)) {
-      throw new Error(`OAuth script not found at ${scriptPath}`);
-    }
-
-    // Use spawn for interactive script to properly handle stdin/stdout
-    await runInteractiveScript(scriptPath, process.cwd());
-  } catch (error) {
-    console.error("❌ OAuth setup failed:", error);
-    process.exit(1);
-  }
-}
-
 async function runTest() {
-  console.log("🧪 Testing API connections...");
+  console.log("🧪 Running tests...");
   try {
     // For global installations, find the script in the package directory
     let scriptPath = path.join(__dirname, "../..", "scripts", "test.js");
 
     // Check if script exists, if not try alternative paths for global install
-    if (!fs.existsSync(scriptPath)) {
+    if (
+      !(await fs
+        .access(scriptPath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       // Try package root relative to binary
       const packageRoot = path.dirname(path.dirname(__dirname));
       scriptPath = path.join(packageRoot, "scripts", "test.js");
     }
 
-    if (!fs.existsSync(scriptPath)) {
+    if (
+      !(await fs
+        .access(scriptPath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       throw new Error(`Test script not found at ${scriptPath}`);
     }
 
-    // Set working directory to current directory for .env file reading
-    await execAsync(`node "${scriptPath}"`, { cwd: process.cwd() });
+    // Use spawn for interactive script to properly handle stdin/stdout
+    await runInteractiveScript(scriptPath, process.cwd());
   } catch (error) {
-    console.error("❌ API test failed:", error);
+    console.error("❌ Tests failed:", error);
     process.exit(1);
   }
 }
 
-async function startBot() {
+async function startBot(): Promise<void> {
   try {
-    console.log("🚀 Starting Replyt...");
+    console.log("🤖 Starting Replyt...\n");
 
     // validate configuration
     validateConfig();
-    console.log("✅ Configuration validated");
 
-    // ensure data directory exists
-    const dataDir = path.dirname(config.databasePath);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-      console.log(`📁 Created data directory: ${dataDir}`);
-    }
-
-    // initialize the bot
+    // create bot instance
     const bot = new AutoReplyBot(config);
 
-    // initialize database and other services
+    // initialize bot
     await bot.initialize();
 
-    // show initial stats
-    const stats = await bot.getStats();
-    console.log("📊 Bot Statistics:", JSON.stringify(stats, null, 2));
+    // start processing comments
+    console.log("🔄 Starting comment processing...");
+    console.log(`⏰ Check interval: ${config.checkIntervalMinutes} minutes`);
+    console.log(`📊 Max replies per run: ${config.maxRepliesPerRun}`);
+    console.log(`🎨 Reply style: ${config.replyStyle}\n`);
 
-    // set up cron job
-    const cronExpression = `*/${config.checkIntervalMinutes} * * * *`; // Every N minutes
-    console.log(
-      `⏰ Setting up cron job: ${cronExpression} (every ${config.checkIntervalMinutes} minutes)`
-    );
+    // Process comments once
+    await bot.processNewComments();
 
-    cron.schedule(cronExpression, async () => {
-      console.log("\n" + "=".repeat(50));
-      console.log(
-        `🕐 ${new Date().toISOString()} - Running scheduled comment check...`
-      );
-      console.log("=".repeat(50));
-
+    // Set up interval for continuous processing
+    const intervalMs = config.checkIntervalMinutes * 60 * 1000;
+    const interval = setInterval(async () => {
       try {
         await bot.processNewComments();
       } catch (error) {
-        console.error("💥 Error in scheduled task:", error);
+        console.error("💥 Error in processing cycle:", error);
       }
+    }, intervalMs);
 
-      console.log("=".repeat(50) + "\n");
-    });
-
-    // run first check immediately
-    console.log("🏃 Running initial comment check...");
-    await bot.processNewComments();
-
-    console.log(
-      `\n✨ Bot is now running! It will check for new comments every ${config.checkIntervalMinutes} minutes.`
-    );
-    console.log("📝 Press Ctrl+C to stop the bot gracefully.\n");
-
-    // graceful shutdown handling
+    // Graceful shutdown
     process.on("SIGINT", () => {
-      console.log("\n🛑 Received SIGINT. Shutting down gracefully...");
+      console.log("\n🛑 Received SIGINT, shutting down gracefully...");
+      clearInterval(interval);
       bot.shutdown();
       process.exit(0);
     });
 
     process.on("SIGTERM", () => {
-      console.log("\n🛑 Received SIGTERM. Shutting down gracefully...");
+      console.log("\n🛑 Received SIGTERM, shutting down gracefully...");
+      clearInterval(interval);
       bot.shutdown();
       process.exit(0);
     });
+
+    console.log("✨ Replyt is running! Press Ctrl+C to stop.\n");
   } catch (error) {
-    console.error("💥 Failed to start bot:", error);
-
-    // If config error, suggest setup
-    if (
-      error instanceof Error &&
-      error.message.includes("Missing required environment")
-    ) {
-      console.log("\n💡 Tip: Run 'replyt setup' to configure your API keys");
+    if (error instanceof Error) {
+      console.error("❌ Error starting bot:", error.message);
+    } else {
+      console.error("❌ Unknown error:", error);
     }
-
     process.exit(1);
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
+
+  if (args.length === 0) {
+    await startBot();
+    return;
+  }
+
   const command = args[0];
 
   switch (command) {
-    case "setup":
-      await runSetup();
-      break;
-
-    case "oauth":
-      await runOAuth();
-      break;
-
-    case "test":
-      await runTest();
-      break;
-
     case "--help":
     case "-h":
     case "help":
@@ -245,29 +218,32 @@ async function main() {
       showVersion();
       break;
 
-    case undefined:
-      // No command provided, start the bot
-      await startBot();
+    case "setup":
+      await runSetup();
+      break;
+
+    case "test":
+      await runTest();
       break;
 
     default:
       console.error(`❌ Unknown command: ${command}`);
-      console.log("💡 Run 'replyt --help' for available commands");
+      console.log("Run 'replyt --help' for usage information.");
       process.exit(1);
   }
 }
 
-// handle unhandled promises
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("🚨 Unhandled Rejection at:", promise, "reason:", reason);
-});
-
+// Handle uncaught exceptions and rejections
 process.on("uncaughtException", (error) => {
-  console.error("🚨 Uncaught Exception:", error);
+  console.error("💥 Uncaught Exception:", error);
   process.exit(1);
 });
 
-// start the application
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("💥 Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
 main().catch((error) => {
   console.error("💥 Fatal error:", error);
   process.exit(1);

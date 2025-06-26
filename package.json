@@ -21,7 +21,6 @@
     "dev": "ts-node src/bin/replyt.ts",
     "watch": "ts-node --watch src/bin/replyt.ts",
     "setup": "node scripts/setup.js",
-    "oauth": "node scripts/oauth.js",
     "test": "node scripts/test.js",
     "clean": "rm -rf dist/",
     "validate": "node scripts/validate-package.js",

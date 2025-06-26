@@ -25,7 +25,7 @@ export function validateConfig(): void {
   const required = ["youtubeApiKey", "youtubeChannelId", "openaiApiKey"];
   const missing = required.filter((key) => !config[key as keyof Config]);
 
-  // check oauth credentials for write operations
+  // OAuth credentials are now required
   const oauthRequired = ["clientId", "clientSecret", "refreshToken"];
   const missingOAuth = oauthRequired.filter(
     (key) => !config.youtubeOAuth[key as keyof OAuthCredentials]
@@ -38,12 +38,10 @@ export function validateConfig(): void {
   }
 
   if (missingOAuth.length > 0) {
-    console.warn(
-      "⚠️  Missing OAuth credentials for posting comments:",
-      missingOAuth.join(", ")
-    );
-    console.warn(
-      '📝 Bot will run in READ-ONLY mode. Run "npm run setup-oauth" to enable posting.'
+    throw new Error(
+      `Missing required OAuth credentials: ${missingOAuth.join(
+        ", "
+      )}. Run "replyt oauth" or "npm run oauth" to setup OAuth authentication.`
     );
   }
 }

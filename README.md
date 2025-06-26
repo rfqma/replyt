@@ -15,90 +15,115 @@
 - 🔧 **Configurable**: Customize reply style, intervals, and more
 - 📦 **CLI & Library**: Use as command line tool or import as library
 
-## 📦 Installation & Usage
+## 📦 Installation & Setup
+
+### 📋 Requirements
+
+**System Requirements:**
+
+- Node.js 16.0.0 or higher
+- npm (comes with Node.js)
+
+**API Requirements:**
+
+- YouTube Data API v3 key
+- YouTube Channel ID
+- OpenAI API key
+- YouTube OAuth credentials for posting
+
+### Choose Your Installation Method
 
 There are **two main ways** to use Replyt:
 
-### 🎯 Method 1: CLI Tool (Global Installation)
+#### 🎯 Method 1: CLI Tool (Recommended for Most Users)
 
 **Best for:** Quick setup, production use, non-developers
 
 ```bash
-# Install globally
+# 1. Install globally
 npm install -g replyt
 
-# Setup configuration
+# 2. Create and navigate to your bot directory
+mkdir replyt-bot
+cd replyt-bot
+
+# 3. Setup configuration
 replyt setup
 
-# Run the bot
+# 4. Start the bot
 replyt
 ```
 
-### 🛠️ Method 2: Local Development (Clone Repository)
+**CLI Commands:**
+
+- `replyt` - Start the bot
+- `replyt setup` - Complete setup wizard (API + OAuth)
+- `replyt test` - Test API connections
+- `replyt --help` - Show help
+- `replyt --version` - Show version
+
+#### 🛠️ Method 2: Local Development (For Developers)
 
 **Best for:** Developers, customization, contributing, learning
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/rfqma/replyt.git
 cd replyt
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Setup configuration
+# 3. Setup configuration
 npm run setup
 
-# Run in development mode
+# 4. Start in development mode
 npm run dev
 ```
 
----
+**Development Commands:**
 
-## 🔧 Setup Guide
+- `npm run dev` - Development mode with auto-restart
+- `npm run start` - Production mode (requires build)
+- `npm run build` - Compile TypeScript
+- `npm run watch` - Development with file watching
+- `npm run setup` - Complete setup wizard (API + OAuth)
+- `npm run test` - Test configuration
+- `npm run clean` - Clean build files
 
-### Environment Variables
+### 🚀 Quick Comparison
+
+| Feature           | CLI Install               | Local Development     |
+| ----------------- | ------------------------- | --------------------- |
+| **Setup Time**    | ⚡ Fast (2 minutes)       | 🔧 Medium (5 minutes) |
+| **Customization** | ❌ Limited                | ✅ Full access        |
+| **Updates**       | ✅ `npm update -g replyt` | 🔄 `git pull`         |
+| **Debugging**     | ❌ Limited                | ✅ Full debugging     |
+| **Contributing**  | ❌ No                     | ✅ Yes                |
+| **Storage**       | ⚡ Minimal                | 💾 Full source code   |
+
+### 🔧 Configuration
 
 Both methods require a `.env` file with your API credentials:
 
 ```env
-# YouTube API
+# Required
 YOUTUBE_API_KEY=your_youtube_api_key_here
 YOUTUBE_CHANNEL_ID=your_channel_id_here
-
-# OpenAI
 OPENAI_API_KEY=your_openai_api_key_here
 
-# OAuth (optional - for posting comments)
+# Required (for posting comments)
 YOUTUBE_CLIENT_ID=your_client_id_here
 YOUTUBE_CLIENT_SECRET=your_client_secret_here
 YOUTUBE_REFRESH_TOKEN=your_refresh_token_here
 YOUTUBE_ACCESS_TOKEN=your_access_token_here
 
-# Bot Configuration
+# Bot Settings (optional)
 CHECK_INTERVAL_MINUTES=5
 MAX_REPLIES_PER_RUN=10
 REPLY_STYLE="friendly and helpful"
 DATABASE_PATH=./data/replyt.db
 ```
-
-### Setup APIs
-
-**For CLI (Global Install):**
-
-```bash
-replyt setup    # Interactive setup wizard
-```
-
-**For Local Development:**
-
-```bash
-npm run setup   # Setup YouTube API Key
-npm run oauth   # Setup OAuth for posting (optional)
-npm run test    # Test configuration
-```
-
----
 
 ## 🎯 Usage Instructions
 
@@ -107,6 +132,9 @@ npm run test    # Test configuration
 After global installation and setup:
 
 ```bash
+# Navigate to your bot directory
+cd replyt-bot
+
 # Start the bot
 replyt
 
@@ -130,7 +158,6 @@ npm run build   # Compile TypeScript
 npm run clean   # Clean build files
 npm run test    # Test API connections
 npm run setup   # Run setup wizard
-npm run oauth   # Setup OAuth authentication
 ```
 
 ### 📚 Library Usage (Both Methods)
@@ -270,9 +297,9 @@ interface YouTubeComment {
 | `YOUTUBE_API_KEY`        | ✅       | -                      | YouTube Data API v3 key          |
 | `YOUTUBE_CHANNEL_ID`     | ✅       | -                      | Your YouTube channel ID          |
 | `OPENAI_API_KEY`         | ✅       | -                      | OpenAI API key                   |
-| `YOUTUBE_CLIENT_ID`      | ❌       | -                      | OAuth client ID (for posting)    |
-| `YOUTUBE_CLIENT_SECRET`  | ❌       | -                      | OAuth client secret              |
-| `YOUTUBE_REFRESH_TOKEN`  | ❌       | -                      | OAuth refresh token              |
+| `YOUTUBE_CLIENT_ID`      | ✅       | -                      | OAuth client ID (for posting)    |
+| `YOUTUBE_CLIENT_SECRET`  | ✅       | -                      | OAuth client secret              |
+| `YOUTUBE_REFRESH_TOKEN`  | ✅       | -                      | OAuth refresh token              |
 | `CHECK_INTERVAL_MINUTES` | ❌       | 5                      | Comment check interval (minutes) |
 | `MAX_REPLIES_PER_RUN`    | ❌       | 10                     | Max replies per cycle            |
 | `REPLY_STYLE`            | ❌       | "friendly and helpful" | AI reply style                   |
@@ -288,26 +315,25 @@ You can customize AI reply style by changing `REPLY_STYLE`:
 - `"educational and informative"`
 - Custom: `"Always reply in Indonesian with emojis"`
 
-## 🔒 Read-Only Mode
+## 🔐 OAuth Setup Required
 
-If you don't configure OAuth, the bot will run in **read-only** mode:
+OAuth authentication is required for the bot to post replies to YouTube. The setup process will guide you through:
 
-- ✅ Read and analyze comments
-- ✅ Generate AI responses
-- ✅ Track in database
-- ❌ Won't post replies to YouTube
+- Creating YouTube OAuth credentials
+- Authorizing the application
+- Generating access and refresh tokens
 
-To enable posting:
+**Setup Commands:**
 
-**CLI:** `replyt oauth`
-**Local:** `npm run oauth`
+**CLI:** `replyt setup`
+**Local:** `npm run setup`
 
 ## 📊 Monitoring
 
 The bot provides detailed logging and statistics:
 
 ```
-🤖 Bot initialized successfully - FULL MODE (can post replies)
+🤖 Bot initialized successfully
 📝 Found 25 total comments
 🆕 Found 5 new comments to process
 🧠 Generating reply for comment by John Doe...
@@ -330,17 +356,16 @@ npm run dev
 
 ### Available Scripts
 
-| Command            | Description                        |
-| ------------------ | ---------------------------------- |
-| `npm run dev`      | Development mode with auto-restart |
-| `npm run start`    | Production mode (requires build)   |
-| `npm run build`    | Compile TypeScript                 |
-| `npm run watch`    | Development with file watching     |
-| `npm run setup`    | Setup wizard                       |
-| `npm run oauth`    | OAuth setup                        |
-| `npm run test`     | Test configuration                 |
-| `npm run clean`    | Clean build files                  |
-| `npm run validate` | Validate package structure         |
+| Command            | Description                         |
+| ------------------ | ----------------------------------- |
+| `npm run dev`      | Development mode with auto-restart  |
+| `npm run start`    | Production mode (requires build)    |
+| `npm run build`    | Compile TypeScript                  |
+| `npm run watch`    | Development with file watching      |
+| `npm run setup`    | Complete setup wizard (API + OAuth) |
+| `npm run test`     | Test configuration                  |
+| `npm run clean`    | Clean build files                   |
+| `npm run validate` | Validate package structure          |
 
 ### Project Structure
 
@@ -376,9 +401,9 @@ replyt/
    Error: invalid_grant
    ```
 
-   - Refresh token expired, run OAuth setup again:
-     - **CLI:** `replyt oauth`
-     - **Local:** `npm run oauth`
+   - Refresh token expired, run setup again:
+     - **CLI:** `replyt setup`
+     - **Local:** `npm run setup`
 
 3. **OpenAI Rate Limits**
    ```
@@ -420,7 +445,3 @@ Built with ❤️ using:
 - [YouTube Data API v3](https://developers.google.com/youtube/v3) for YouTube integration
 - [TypeScript](https://www.typescriptlang.org/) for type safety
 - [SQLite](https://www.sqlite.org/) for data persistence
-
----
-
-⭐ **Star this repository if it's helpful!**
